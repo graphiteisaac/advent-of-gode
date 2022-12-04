@@ -13,67 +13,47 @@ type Row struct {
 	R string
 }
 
-func getShapeScore(shape string) int {
-	if shape == "rock" {
-		return 1
-	} else if shape == "paper" {
-		return 2
-	}
-	// Has to be C
-	return 3
+const ROCK = "A"
+const PAPER = "B"
+const SCISSORS = "C"
+
+var ShapeScore = map[string]int{
+	ROCK:     1,
+	PAPER:    2,
+	SCISSORS: 3,
+}
+
+var WinningMoves = map[string]string{
+	ROCK:     PAPER,
+	PAPER:    SCISSORS,
+	SCISSORS: ROCK,
+}
+
+var LosingMoves = map[string]string{
+	PAPER:    ROCK,
+	SCISSORS: PAPER,
+	ROCK:     SCISSORS,
 }
 
 func getRPSOutcome(lhs, rhs string) int {
-	num := 6
-	if (lhs == "paper" && rhs == "rock") ||
-		(lhs == "scissors" && rhs == "paper") ||
-		(lhs == "rock" && rhs == "scissors") {
-		num = 0
+	if LosingMoves[lhs] == rhs {
+		return 0
 	}
-
 	if lhs == rhs {
-		num = 3
+		return 3
 	}
-
-	return num
+	return 6
 }
 
 func getScoreOne(lhs string, rhs string) int {
 	// In this round, we are assuming X Y and Z are our counter move.
-	shapes := map[string]string{
-		"A": "rock",
-		"B": "paper",
-		"C": "scissors",
-		"X": "rock",
-		"Y": "paper",
-		"Z": "scissors",
+	counter := map[string]string{
+		"X": ROCK,
+		"Y": PAPER,
+		"Z": SCISSORS,
 	}
 
-	return getShapeScore(shapes[rhs]) + getRPSOutcome(shapes[lhs], shapes[rhs])
-}
-
-func getLosingMove(lhs string) string {
-	if lhs == "A" {
-		return "scissors"
-	} else if lhs == "B" {
-		return "rock"
-	} else if lhs == "C" {
-		return "paper"
-	}
-
-	return "paper"
-}
-
-func getWinningMove(lhs string) string {
-	if lhs == "A" {
-		return "paper"
-	} else if lhs == "B" {
-		return "scissors"
-	} else if lhs == "C" {
-		return "rock"
-	}
-
-	return "paper"
+	return ShapeScore[counter[rhs]] + getRPSOutcome(lhs, counter[rhs])
 }
 
 func getScoreTwo(lhs string, rhs string) int {
@@ -82,20 +62,14 @@ func getScoreTwo(lhs string, rhs string) int {
 	const DRAW = "Y"
 	const WIN = "Z"
 
-	shapes := map[string]string{
-		"A": "rock",
-		"B": "paper",
-		"C": "scissors",
-	}
-
 	if rhs == WIN {
-		move := getWinningMove(lhs)
-		return getShapeScore(move) + getRPSOutcome(shapes[lhs], move)
+		move := WinningMoves[lhs]
+		return ShapeScore[move] + getRPSOutcome(lhs, move)
 	} else if rhs == LOSE {
-		move := getLosingMove(lhs)
-		return getShapeScore(move) + getRPSOutcome(shapes[lhs], move)
+		move := LosingMoves[lhs]
+		return ShapeScore[move] + getRPSOutcome(lhs, move)
 	} else if rhs == DRAW {
-		return getShapeScore(shapes[lhs]) + getRPSOutcome(shapes[lhs], shapes[lhs])
+		return ShapeScore[lhs] + getRPSOutcome(lhs, lhs)
 	}
 
 	return 3247239892
